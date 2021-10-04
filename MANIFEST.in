@@ -1,0 +1,3 @@
+recursive-include d2q9-cpu *.h *.c *file *.py *.cu
+recursive-include d2q9-cuda *.h *.c *file *.py *.cu
+
