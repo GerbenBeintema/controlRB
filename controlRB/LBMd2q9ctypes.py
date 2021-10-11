@@ -187,7 +187,7 @@ class lbmd2q9(object):
                 '''
     def __init__(self,mode='cpu',
                  NX=64,NY=64,NSIM=1,TBOT0=2.,TTOP0=1.,T0=None,wallprop='WALLED',
-                 Ra=1e5,ff_body=0.,Pr = 0.71,verbose=True,seed=42,usedtype='double',
+                 Ra=1e5,ff_body=0.,Pr = 0.71, tau=0.5666, verbose=True,seed=42,usedtype='double',
                  accelerationcontrol=False,eps0=0.,omega0=0.,name='',
                  device=None):
         '''The class holder with d2q9 lbm for thermal convection 
@@ -250,7 +250,7 @@ class lbmd2q9(object):
             assert False, 'Mode need to be "cpu" for "cuda"'
 
         self.Pr = Pr
-        self.tau = 0.5666
+        self.tau = tau
         self.taut = (self.tau-0.5)/Pr+0.5
         self.cs2 = 1./3.
         self.nu = self.cs2*(self.tau-0.5)

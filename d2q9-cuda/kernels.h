@@ -69,6 +69,7 @@
 #define NXP2 (NX+2)
 #define NYP2 (NY+2)
 #define rho0 1.0
+#define bceps 0.00150
 // #ifndef WALLED //&?
 // #ifndef PERIODIC
 // # error ERROR: NO WALL PROP SET !!!

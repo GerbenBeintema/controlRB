@@ -474,16 +474,16 @@ __global__ void bc_top_bottom_walls(data_t *d_f2, data_t *d_f4,
 	{	
 		int bot_idx = (index + 1) * NYP2 + 1;  // bottom wall
 		int top_idx = (index + 1) * NYP2 + NY; // top wall
-
+		
 		// at bottom
-		d_f2[bot_idx - 1]        = d_f4[bot_idx];
-		d_f5[bot_idx - NYP2 - 1] = d_f7[bot_idx];
-		d_f6[bot_idx + NYP2 - 1] = d_f8[bot_idx];
+		d_f2[bot_idx - 1]        = d_f4[bot_idx]*(1-bceps);
+		d_f5[bot_idx - NYP2 - 1] = d_f7[bot_idx] + d_f4[bot_idx]*bceps;
+		d_f6[bot_idx + NYP2 - 1] = d_f8[bot_idx] + d_f4[bot_idx]*bceps;
 
 		// at top
-		d_f4[top_idx + 1]        = d_f2[top_idx];
-		d_f8[top_idx - NYP2 + 1] = d_f6[top_idx];
-		d_f7[top_idx + NYP2 + 1] = d_f5[top_idx];
+		d_f4[top_idx + 1]        = d_f2[top_idx]*(1-bceps);
+		d_f8[top_idx - NYP2 + 1] = d_f6[top_idx] + d_f2[bot_idx]*bceps;
+		d_f7[top_idx + NYP2 + 1] = d_f5[top_idx] + d_f2[bot_idx]*bceps;
 
 
 		// temperature bottom
