@@ -86,7 +86,7 @@ libsimp:
 	gcc -Wall -lm -fPIC -shared  -DNX=64 -DNY=64 -DNSIM=8 -DTBOT0=2. -DTTOP0=1. -DWALLED -Dalphag=0.00001 -Dff_body=0. -o lbm.so lbmd2q9.c -lc
 
 clean:
-	rm -f lbm${name}.so  a.out 
+	rm -f lbm${name}.so
 
 superclean:
 	rm -f lbm*.so  a.out analysis.out

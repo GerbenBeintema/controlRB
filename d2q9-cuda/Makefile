@@ -97,7 +97,7 @@ test.out: rlbmso${name}.o rlbm_gpuso${name}.o
 ################
 
 clean:
-	rm -f rlbm rlbm_gpu${name}.o rlbm${name}.o rlbm${name}.so lbm${name}.so rlbmso${name}.o rlbm_gpuso${name}.o test${name}.out
+	rm -f rlbm${name} rlbm_gpu${name}.o rlbm${name}.o rlbm${name}.so lbm${name}.so rlbmso${name}.o rlbm_gpuso${name}.o test${name}.out
 
 superclean:
 	rm -f rlbm* rlbm_gpu*.o rlbm*.o rlbm*.so lbm*.so rlbmso*.o rlbm_gpuso*.o test*.out

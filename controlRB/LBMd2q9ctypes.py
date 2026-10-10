@@ -464,12 +464,16 @@ class lbmd2q9(object):
 
     def clean(self):
         assert self.closed is False, 'already closed'
-        '''Good practice to use clean when using cuda'''
+        '''Release simulation resources and remove this instance's build files.'''
         if self.verbose: print('cleaning...')
         if self.mode=='cuda':
             self._cleanfun(self.simpointer)
         self.closerender()
         self.closed = True
+        arg = ['make','clean','name='+str(self.name)]
+        if not self.verbose:
+            arg += ['--silent']
+        run(arg,cwd=path.join(toppath,self.libdir),check=True)
 
     def close(self):
         '''Same as clean'''
