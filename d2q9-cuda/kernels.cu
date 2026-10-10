@@ -54,6 +54,8 @@ void gpu_mem_init(gpuVars *gpu)
 
 	gpu[0].hv = (hostVars *) malloc (sizeof(hostVars));
 
+	checkCudaErrors(cudaStreamCreateWithFlags(&gpu[0].sim_stream, cudaStreamNonBlocking));
+
 
 
 	checkCudaErrors(cudaMalloc((void **) &gpu[0].cv->dev_threadLookupArr, sizeof(int) * NY * NX * NSIM));
@@ -151,6 +153,7 @@ void gpu_mem_release(gpuVars *gpu)
 	#ifndef SILENT
 	fprintf(stderr, "Freeing GPU memory ... \n");
 	#endif
+	checkCudaErrors(cudaStreamSynchronize(gpu[0].sim_stream));
 
 	checkCudaErrors(cudaFree(gpu[0].cv->dev_threadLookupArr));
 	//checkCudaErrors(cudaFree(gpu[0].cv->dev_tmp_pointer));
@@ -212,6 +215,7 @@ void gpu_mem_release(gpuVars *gpu)
 		checkCudaErrors(cudaFree(gpu[0].cv->dev_omega));
 		checkCudaErrors(cudaFree(gpu[0].cv->dev_epssin));
 	#endif
+	checkCudaErrors(cudaStreamDestroy(gpu[0].sim_stream));
 }
 
 
@@ -643,7 +647,7 @@ __global__ void cal_epssin(const data_t * __restrict__ dev_eps,
 #ifdef ACCELERATION
 void gpuCall_cal_epssin(gpuVars *gpu) 
 {
-	cal_epssin<<<gpu[0].blocks_persim,gpu[0].threads_persim>>>(gpu[0].cv->dev_eps,
+	cal_epssin<<<gpu[0].blocks_persim,gpu[0].threads_persim,0,gpu[0].sim_stream>>>(gpu[0].cv->dev_eps,
 															   gpu[0].cv->dev_omega, 
 															   gpu[0].cv->dev_time,
 															   gpu[0].cv->dev_epssin);
@@ -652,7 +656,7 @@ void gpuCall_cal_epssin(gpuVars *gpu)
 
 void gpuCall_inc_time(gpuVars *gpu)
 {
-	inc_time<<<gpu[0].blocks_persim,gpu[0].threads_persim>>>(gpu[0].cv->dev_time);
+	inc_time<<<gpu[0].blocks_persim,gpu[0].threads_persim,0,gpu[0].sim_stream>>>(gpu[0].cv->dev_time);
 }
 
 void gpuCall_thread_idx_mapper(gpuVars *gpu)
@@ -682,8 +686,7 @@ void gpuCall_calculate_macro(gpuVars *gpu)
 
 void gpuCall_displace_collide(gpuVars *gpu, int ioflag)
 {
-
-	displace_collide<<<gpu[0].blocks_dispColl, gpu[0].threads_dispColl>>>(gpu[0].cv->d_f0, gpu[0].cv->d_f1, gpu[0].cv->d_f2,
+	displace_collide<<<gpu[0].blocks_dispColl, gpu[0].threads_dispColl,0,gpu[0].sim_stream>>>(gpu[0].cv->d_f0, gpu[0].cv->d_f1, gpu[0].cv->d_f2,
 							gpu[0].cv->d_f3, gpu[0].cv->d_f4, gpu[0].cv->d_f5,
 							gpu[0].cv->d_f6, gpu[0].cv->d_f7, gpu[0].cv->d_f8,
 							gpu[0].cv->d_ft0, gpu[0].cv->d_ft1,
@@ -705,7 +708,7 @@ void gpuCall_displace_collide(gpuVars *gpu, int ioflag)
 
 void gpuCall_bc_top_bottom_walls(gpuVars *gpu)
 {
-	bc_top_bottom_walls<<<gpu[0].blocks_bcTB, gpu[0].threads_bcTB>>>(gpu[0].cv->d_f2, gpu[0].cv->d_f4,
+	bc_top_bottom_walls<<<gpu[0].blocks_bcTB, gpu[0].threads_bcTB,0,gpu[0].sim_stream>>>(gpu[0].cv->d_f2, gpu[0].cv->d_f4,
 								gpu[0].cv->d_f5, gpu[0].cv->d_f6,
 								gpu[0].cv->d_f7, gpu[0].cv->d_f8,
 								gpu[0].cv->d_ft1, gpu[0].cv->d_ft3,
@@ -715,7 +718,7 @@ void gpuCall_bc_top_bottom_walls(gpuVars *gpu)
 
 void gpuCall_bc_east_west_walls_periodic(gpuVars *gpu)
 {
-	bc_east_west_walls_periodic<<<gpu[0].blocks_bcEW, gpu[0].threads_bcEW>>>(gpu[0].cv->d_f1, gpu[0].cv->d_f3,
+	bc_east_west_walls_periodic<<<gpu[0].blocks_bcEW, gpu[0].threads_bcEW,0,gpu[0].sim_stream>>>(gpu[0].cv->d_f1, gpu[0].cv->d_f3,
 								gpu[0].cv->d_f5, gpu[0].cv->d_f6,
 								gpu[0].cv->d_f7, gpu[0].cv->d_f8,
 								gpu[0].cv->d_ft0, gpu[0].cv->d_ft2);
@@ -724,7 +727,7 @@ void gpuCall_bc_east_west_walls_periodic(gpuVars *gpu)
 
 void gpuCall_bc_east_west_walls_walls(gpuVars *gpu)
 {
-	bc_east_west_walls_walls<<<gpu[0].blocks_bcEW, gpu[0].threads_bcEW>>>(gpu[0].cv->d_f1, gpu[0].cv->d_f3,
+	bc_east_west_walls_walls<<<gpu[0].blocks_bcEW, gpu[0].threads_bcEW,0,gpu[0].sim_stream>>>(gpu[0].cv->d_f1, gpu[0].cv->d_f3,
 								gpu[0].cv->d_f5, gpu[0].cv->d_f6,
 								gpu[0].cv->d_f7, gpu[0].cv->d_f8,
 								gpu[0].cv->d_ft0, gpu[0].cv->d_ft2);
@@ -732,7 +735,7 @@ void gpuCall_bc_east_west_walls_walls(gpuVars *gpu)
 
 void gpuCall_bc_all_walls(gpuVars *gpu)
 {
-	bc_all_walls<<<gpu[0].blocks_bcTB, gpu[0].threads_bcTB>>>(gpu[0].cv->d_f1, gpu[0].cv->d_f2,
+	bc_all_walls<<<gpu[0].blocks_bcTB, gpu[0].threads_bcTB,0,gpu[0].sim_stream>>>(gpu[0].cv->d_f1, gpu[0].cv->d_f2,
 								gpu[0].cv->d_f3, gpu[0].cv->d_f4,
 								gpu[0].cv->d_f5, gpu[0].cv->d_f6,
 								gpu[0].cv->d_f7, gpu[0].cv->d_f8,
