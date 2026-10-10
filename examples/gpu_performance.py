@@ -17,7 +17,8 @@ from controlRB import lbmd2q9
 
 START_SIZE = 300
 GRID_GROWTH = 1.25
-RAYLEIGH = 1e4
+RAYLEIGH_AT_START_SIZE = 1e7
+RAYLEIGH_SIZE_EXPONENT = 3
 PRANDTL = 0.71
 TAU = 0.5666
 WARMUP_STEPS = 2
@@ -28,6 +29,10 @@ BOTTOM_TEMPERATURE = 2.0
 TOP_TEMPERATURE = 1.0
 SEED = 42
 REFERENCE_PATH = Path(__file__).with_name("gpu_performance_reference.json")
+
+
+def rayleigh_for_size(size):
+    return RAYLEIGH_AT_START_SIZE * (size / START_SIZE) ** RAYLEIGH_SIZE_EXPONENT
 
 
 def get_gpu_name(device):
@@ -48,6 +53,7 @@ def get_gpu_name(device):
 
 def run_case(size, device):
     name = "gpup{}{}{}".format(os.getpid(), size, time.time_ns())
+    rayleigh = rayleigh_for_size(size)
     lbm = lbmd2q9(
         mode="cuda",
         device=device,
@@ -56,7 +62,7 @@ def run_case(size, device):
         NSIM=1,
         TBOT0=BOTTOM_TEMPERATURE,
         TTOP0=TOP_TEMPERATURE,
-        Ra=RAYLEIGH,
+        Ra=rayleigh,
         Pr=PRANDTL,
         tau=TAU,
         wallprop="WALLED",
@@ -75,6 +81,7 @@ def run_case(size, device):
         )
         return {
             "size": size,
+            "rayleigh": rayleigh,
             "iterations_per_second": BENCHMARK_STEPS / elapsed,
             "elapsed_seconds": elapsed,
             "nusselt": float(lbm.calNu()),
@@ -93,8 +100,9 @@ def relative_difference(value, reference):
 
 def print_results(results, reference_results):
     print(
-        "{:>6} {:>12} {:>12} {:>11} {:>12} {:>11} {:>16} {:>12}".format(
+        "{:>6} {:>12} {:>12} {:>12} {:>11} {:>12} {:>11} {:>16} {:>12}".format(
             "N",
+            "Ra",
             "iter/s",
             "ref iter/s",
             "speed diff %",
@@ -104,7 +112,7 @@ def print_results(results, reference_results):
             "MSE diff %",
         )
     )
-    print("-" * 108)
+    print("-" * 120)
     for result in results:
         reference = reference_results.get(str(result["size"]))
         if reference is None:
@@ -123,8 +131,9 @@ def print_results(results, reference_results):
             )
 
         print(
-            "{:6d} {:12.2f} {:>12} {:>11} {:12.6f} {:>11} {:16.8e} {:>12}".format(
+            "{:6d} {:12.4e} {:12.2f} {:>12} {:>11} {:12.6f} {:>11} {:16.8e} {:>12}".format(
                 result["size"],
+                result["rayleigh"],
                 result["iterations_per_second"],
                 "{:.2f}".format(reference_it) if reference_it is not None else "-",
                 "{:+.3f}".format(speed_diff) if speed_diff is not None else "-",
@@ -164,7 +173,11 @@ def main():
 
     settings = {
         "mode": "cuda",
-        "rayleigh": RAYLEIGH,
+        "rayleigh_scaling": {
+            "value_at_start_size": RAYLEIGH_AT_START_SIZE,
+            "start_size": START_SIZE,
+            "size_exponent": RAYLEIGH_SIZE_EXPONENT,
+        },
         "prandtl": PRANDTL,
         "tau": TAU,
         "bottom_temperature": BOTTOM_TEMPERATURE,

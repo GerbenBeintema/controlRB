@@ -1,9 +1,13 @@
 {
-  "created_utc": "2026-10-10T16:20:07.962703+00:00",
+  "created_utc": "2026-10-10T16:35:38.904518+00:00",
   "gpu_name": "NVIDIA GeForce RTX 4070 Ti SUPER",
   "settings": {
     "mode": "cuda",
-    "rayleigh": 10000.0,
+    "rayleigh_scaling": {
+      "value_at_start_size": 10000000.0,
+      "start_size": 300,
+      "size_exponent": 3
+    },
     "prandtl": 0.71,
     "tau": 0.5666,
     "bottom_temperature": 2.0,
@@ -19,82 +23,92 @@
   "results": {
     "300": {
       "size": 300,
-      "iterations_per_second": 23379.997844727473,
-      "elapsed_seconds": 0.4277160360070411,
-      "nusselt": 1.0066956281661987,
-      "mean_squared_velocity": 3.3330773037409944e-12,
+      "rayleigh": 10000000.0,
+      "iterations_per_second": 24011.163558380144,
+      "elapsed_seconds": 0.4164729449985316,
+      "nusselt": 6.635146141052246,
+      "mean_squared_velocity": 0.0008774629095569253,
       "time_steps": 10002
     },
     "375": {
       "size": 375,
-      "iterations_per_second": 17476.719183716825,
-      "elapsed_seconds": 0.5721897740004351,
-      "nusselt": 1.0082088708877563,
-      "mean_squared_velocity": 5.595965531235425e-12,
+      "rayleigh": 19531250.0,
+      "iterations_per_second": 16075.863594915616,
+      "elapsed_seconds": 0.6220505630044499,
+      "nusselt": 10.799699783325195,
+      "mean_squared_velocity": 0.00105963833630085,
       "time_steps": 10002
     },
     "469": {
       "size": 469,
-      "iterations_per_second": 11960.733824715531,
-      "elapsed_seconds": 0.8360691029956797,
-      "nusselt": 1.0086053609848022,
-      "mean_squared_velocity": 3.876778672390335e-12,
+      "rayleigh": 38208040.370370366,
+      "iterations_per_second": 9864.903228200295,
+      "elapsed_seconds": 1.0136946879938478,
+      "nusselt": 9.307456970214844,
+      "mean_squared_velocity": 0.0007233197684399784,
       "time_steps": 10002
     },
     "587": {
       "size": 587,
-      "iterations_per_second": 7919.604471001517,
-      "elapsed_seconds": 1.2626893220003694,
-      "nusselt": 1.0088179111480713,
-      "mean_squared_velocity": 3.1953623774727546e-12,
+      "rayleigh": 74911852.96296297,
+      "iterations_per_second": 6940.311435999242,
+      "elapsed_seconds": 1.4408575309935259,
+      "nusselt": 9.1216402053833,
+      "mean_squared_velocity": 0.000612094474490732,
       "time_steps": 10002
     },
     "734": {
       "size": 734,
-      "iterations_per_second": 5420.212200463044,
-      "elapsed_seconds": 1.8449462179996772,
-      "nusselt": 1.0091524124145508,
-      "mean_squared_velocity": 2.3805109359426035e-12,
+      "rayleigh": 146461816.29629633,
+      "iterations_per_second": 4728.762533901851,
+      "elapsed_seconds": 2.114718158991309,
+      "nusselt": 9.251361846923828,
+      "mean_squared_velocity": 0.0005861655808985233,
       "time_steps": 10002
     },
     "918": {
       "size": 918,
-      "iterations_per_second": 3504.1941526256287,
-      "elapsed_seconds": 2.853723157008062,
-      "nusselt": 1.009477972984314,
-      "mean_squared_velocity": 1.8306998712108724e-12,
+      "rayleigh": 286526160.0,
+      "iterations_per_second": 3372.4077469378635,
+      "elapsed_seconds": 2.965240489997086,
+      "nusselt": 12.988381385803223,
+      "mean_squared_velocity": 0.000490028818603605,
       "time_steps": 10002
     },
     "1148": {
       "size": 1148,
-      "iterations_per_second": 2311.7343201988124,
-      "elapsed_seconds": 4.325756603007903,
-      "nusselt": 1.0094937086105347,
-      "mean_squared_velocity": 1.4647632065600824e-12,
+      "rayleigh": 560353256.2962964,
+      "iterations_per_second": 2073.0914672275467,
+      "elapsed_seconds": 4.823713839010452,
+      "nusselt": 13.080327987670898,
+      "mean_squared_velocity": 0.00032885640393942595,
       "time_steps": 10002
     },
     "1435": {
       "size": 1435,
-      "iterations_per_second": 1576.3306606860388,
-      "elapsed_seconds": 6.343846661999123,
-      "nusselt": 1.0096291303634644,
-      "mean_squared_velocity": 1.0930145677434666e-12,
+      "rayleigh": 1094439953.7037036,
+      "iterations_per_second": 1493.436269340304,
+      "elapsed_seconds": 6.695967015999486,
+      "nusselt": 18.57626724243164,
+      "mean_squared_velocity": 0.00027902654255740345,
       "time_steps": 10002
     },
     "1794": {
       "size": 1794,
-      "iterations_per_second": 930.2451526207368,
-      "elapsed_seconds": 10.749854456997127,
-      "nusselt": 1.0103081464767456,
-      "mean_squared_velocity": 9.304669664964016e-13,
+      "rayleigh": 2138471920.0000002,
+      "iterations_per_second": 1013.2060474772408,
+      "elapsed_seconds": 9.869660791009665,
+      "nusselt": 24.799100875854492,
+      "mean_squared_velocity": 0.0002317126200068742,
       "time_steps": 10002
     },
     "2243": {
       "size": 2243,
-      "iterations_per_second": 609.2219822105357,
-      "elapsed_seconds": 16.414378161003697,
-      "nusselt": 1.0094574689865112,
-      "mean_squared_velocity": 7.305117340032641e-13,
+      "rayleigh": 4179497372.962963,
+      "iterations_per_second": 617.597547895739,
+      "elapsed_seconds": 16.191774131992133,
+      "nusselt": 35.58133316040039,
+      "mean_squared_velocity": 0.00019132986199110746,
       "time_steps": 10002
     }
   }
