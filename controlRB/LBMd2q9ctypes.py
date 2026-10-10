@@ -651,11 +651,12 @@ class lbmd2q9(object):
         import skimage.transform
         # make center image from current state named ar
         arr = skimage.transform.rescale(self.temp[0],float(self.windowwidth)/self.temp.shape[1],
-                                        anti_aliasing=False,mode='reflect',multichannel=False) #rescaled
+                                        anti_aliasing=False,mode='reflect',channel_axis=None) #rescaled
         Max = np.max(arr) if vmax is None else vmax
         Min = np.min(arr) if vmin is None else vmin
-        arr = np.array(np.clip((arr-Min)/((Max-Min)+1e-15)*255,0,255),dtype=np.uint8)
-        arr = arr[:,:,np.newaxis]*np.array([1,1,1],np.uint8) #new axis with 3
+        arr = np.clip((arr-Min)/((Max-Min)+1e-15),0,1)
+        import matplotlib
+        arr = np.asarray(matplotlib.colormaps["viridis"](arr)[:,:,:3]*255,dtype=np.uint8)
         NYimg = arr.shape[0]
 
         # Convert array to texture
