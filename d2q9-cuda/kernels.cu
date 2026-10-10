@@ -568,6 +568,56 @@ __global__ void bc_east_west_walls_walls(data_t *d_f1, data_t *d_f3,
 	}
 }
 
+__global__ void bc_all_walls(data_t *d_f1, data_t *d_f2, data_t *d_f3, data_t *d_f4,
+							 data_t *d_f5, data_t *d_f6, data_t *d_f7, data_t *d_f8,
+							 data_t *d_ft0, data_t *d_ft1, data_t *d_ft2, data_t *d_ft3,
+							 data_t *bottemp, data_t *toptemp)
+{
+	int index = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if(index < (NXP2 * NSIM - 2))
+	{
+		int x = index + 1;
+		int bot_idx = x * NYP2 + 1;
+		int top_idx = bot_idx + NY - 1;
+
+		d_f2[bot_idx - 1] = d_f4[bot_idx];
+		if(x % NXP2 != 1)
+			d_f5[bot_idx - NYP2 - 1] = d_f7[bot_idx];
+		if(x % NXP2 != NX)
+			d_f6[bot_idx + NYP2 - 1] = d_f8[bot_idx];
+
+		d_f4[top_idx + 1] = d_f2[top_idx];
+		if(x % NXP2 != 1)
+			d_f8[top_idx - NYP2 + 1] = d_f6[top_idx];
+		if(x % NXP2 != NX)
+			d_f7[top_idx + NYP2 + 1] = d_f5[top_idx];
+
+		d_ft1[bot_idx - 1] = bottemp[index + 1] * 0.25;
+		d_ft3[top_idx + 1] = toptemp[index + 1] * 0.25;
+	}
+
+	if(index < (NY * NSIM))
+	{
+		int s = index / NY;
+		int j = index - (s * NY) + 1;
+		int idx_e_wall = j + (NX * NYP2) + (s * NXP2 * NYP2);
+		int idx_e_ghost = idx_e_wall + NYP2;
+		int idx_w_wall = idx_e_wall - ((NX - 1) * NYP2);
+		int idx_w_ghost = idx_w_wall - NYP2;
+
+		d_f5[idx_w_ghost - 1] = d_f7[idx_w_wall];
+		d_f1[idx_w_ghost] = d_f3[idx_w_wall];
+		d_f8[idx_w_ghost + 1] = d_f6[idx_w_wall];
+		d_ft0[idx_w_ghost] = d_ft2[idx_w_wall];
+
+		d_f6[idx_e_ghost - 1] = d_f8[idx_e_wall];
+		d_f3[idx_e_ghost] = d_f1[idx_e_wall];
+		d_f7[idx_e_ghost + 1] = d_f5[idx_e_wall];
+		d_ft2[idx_e_ghost] = d_ft0[idx_e_wall];
+	}
+}
+
 __global__ void inc_time(long unsigned int * dev_time){
 	int index = blockIdx.x * blockDim.x + threadIdx.x;
 	if (index < NSIM){
@@ -685,6 +735,17 @@ void gpuCall_bc_east_west_walls_walls(gpuVars *gpu)
 								gpu[0].cv->d_ft0, gpu[0].cv->d_ft2);
 }
 
+void gpuCall_bc_all_walls(gpuVars *gpu)
+{
+	bc_all_walls<<<gpu[0].blocks_bcTB, gpu[0].threads_bcTB>>>(gpu[0].cv->d_f1, gpu[0].cv->d_f2,
+								gpu[0].cv->d_f3, gpu[0].cv->d_f4,
+								gpu[0].cv->d_f5, gpu[0].cv->d_f6,
+								gpu[0].cv->d_f7, gpu[0].cv->d_f8,
+								gpu[0].cv->d_ft0, gpu[0].cv->d_ft1,
+								gpu[0].cv->d_ft2, gpu[0].cv->d_ft3,
+								gpu[0].cv->dev_bottemp, gpu[0].cv->dev_toptemp);
+}
+
 
 
 
@@ -777,7 +838,10 @@ void gpu_set_threads_blocks(gpuVars *gpu, int which_gpu)
 	}
 
 	gpu[0].blocks_dispColl  = calc_blocks((NX * NY * NSIM),  gpu[0].threads_dispColl);
-	gpu[0].blocks_bcTB      = calc_blocks((NXP2 * NSIM - 2), gpu[0].threads_bcTB);
+	unsigned int bc_work = (NXP2 * NSIM - 2);
+	if(bc_work < (NY * NSIM))
+		bc_work = NY * NSIM;
+	gpu[0].blocks_bcTB      = calc_blocks(bc_work, gpu[0].threads_bcTB);
 	gpu[0].blocks_bcEW      = calc_blocks((NY * NSIM),       gpu[0].threads_bcEW);
 	gpu[0].blocks_persim    = calc_blocks((NSIM),            gpu[0].threads_persim);
 

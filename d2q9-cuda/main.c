@@ -363,33 +363,37 @@ void simsteps(simulation *sim, int n2steps)
 	#endif
 	for (int i = 0; i < 2*n2steps-1; ++i)
 	{
-		gpuCall_bc_top_bottom_walls(gpu);
 		#ifdef PERIODIC
+			gpuCall_bc_top_bottom_walls(gpu);
 			gpuCall_bc_east_west_walls_periodic(gpu);
 		#else
-			gpuCall_bc_east_west_walls_walls(gpu);
+			gpuCall_bc_all_walls(gpu);
 		#endif
 		#ifdef ACCELERATION
 			gpuCall_cal_epssin(gpu);
 		#endif
 		gpuCall_displace_collide(gpu, 0);
 		pointerSwap(gpu);
+		#ifdef ACCELERATION
 		gpuCall_inc_time(gpu);
+		#endif
 		cpu_inc_time(gpu); //maybe out of loop?
 	}
 
-	gpuCall_bc_top_bottom_walls(gpu);
 	#ifdef PERIODIC
+		gpuCall_bc_top_bottom_walls(gpu);
 		gpuCall_bc_east_west_walls_periodic(gpu);
 	#else
-		gpuCall_bc_east_west_walls_walls(gpu);
+		gpuCall_bc_all_walls(gpu);
 	#endif
 	#ifdef ACCELERATION
 		gpuCall_cal_epssin(gpu);
 	#endif
 	gpuCall_displace_collide(gpu, 1); //update dev_rho, dev_u, dev_v, dev_temperature
 	pointerSwap(gpu);
+	#ifdef ACCELERATION
 	gpuCall_inc_time(gpu);
+	#endif
 	cpu_inc_time(gpu);
 
 

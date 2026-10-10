@@ -241,6 +241,8 @@ extern "C"
 
 	void gpuCall_bc_top_bottom_walls(gpuVars *gpu);
 
+	void gpuCall_bc_all_walls(gpuVars *gpu);
+
 	void gpuCall_bc_east_west_walls_periodic(gpuVars *gpu);
 
 	void gpuCall_bc_east_west_walls_walls(gpuVars *gpu);
