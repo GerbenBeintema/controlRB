@@ -632,41 +632,41 @@ class lbmd2q9(object):
 
     ########### pyglet visualisation ########
     def render(self,windowsize=600,vmin=None,vmax=None):
-        '''Faster visualisation than just the plots using pyglet
-         NX > NY'''
+        '''Faster visualisation than just the plots using pyglet.'''
 
         import pyglet
         if self.window is None:
-            self.window = pyglet.window.Window(width=windowsize, height=windowsize,vsync=False,resizable=True)
-            self.windowwidth = windowsize
-            self.windowheight = windowsize
-
+            scale = float(windowsize) / max(self.NX, self.NY)
+            width = max(1, int(round(self.NX * scale)))
+            height = max(1, int(round(self.NY * scale)))
+            self.window = pyglet.window.Window(width=width, height=height,
+                                               vsync=False, resizable=True)
+            self._render_texture = None
 
 
         self.window.clear()
         self.window.switch_to()
         self.window.dispatch_events()
 
-        #rescale
-        import skimage.transform
-        # make center image from current state named ar
-        arr = skimage.transform.rescale(self.temp[0],float(self.windowwidth)/self.temp.shape[1],
-                                        anti_aliasing=False,mode='reflect',channel_axis=None) #rescaled
+        arr = self.temp[0]
         Max = np.max(arr) if vmax is None else vmax
         Min = np.min(arr) if vmin is None else vmin
         arr = np.clip((arr-Min)/((Max-Min)+1e-15),0,1)
         import matplotlib
         arr = np.asarray(matplotlib.colormaps["viridis"](arr)[:,:,:3]*255,dtype=np.uint8)
-        NYimg = arr.shape[0]
+        img = pyglet.image.ImageData(self.NX,self.NY,'RGB',arr.tobytes(),
+                                     pitch=self.NX*-3)
+        if self._render_texture is None:
+            self._render_texture = img.get_texture()
+        else:
+            self._render_texture.blit_into(img,0,0,0)
 
-        # Convert array to texture
-        img = pyglet.image.ImageData(arr.shape[1],arr.shape[0],'RGB',arr.tobytes(),pitch=arr.shape[1]*-3) #potential error in arr.shape
-        texture = img.get_texture()
-        
-
-        #window.flip()
-        a = float(self.windowwidth)/2-NYimg/2
-        texture.blit(0, a)
+        image_scale = min(self.window.width / self.NX, self.window.height / self.NY)
+        width = max(1, int(round(self.NX * image_scale)))
+        height = max(1, int(round(self.NY * image_scale)))
+        x = (self.window.width - width) / 2
+        y = (self.window.height - height) / 2
+        self._render_texture.blit(x, y, width=width, height=height)
         self.window.flip()
 
     def closerender(self):
