@@ -1,0 +1,101 @@
+{
+  "created_utc": "2026-10-10T16:20:07.962703+00:00",
+  "gpu_name": "NVIDIA GeForce RTX 4070 Ti SUPER",
+  "settings": {
+    "mode": "cuda",
+    "rayleigh": 10000.0,
+    "prandtl": 0.71,
+    "tau": 0.5666,
+    "bottom_temperature": 2.0,
+    "top_temperature": 1.0,
+    "wallprop": "WALLED",
+    "dtype": "float",
+    "seed": 42,
+    "warmup_steps": 2,
+    "benchmark_steps": 10000,
+    "start_size": 300,
+    "grid_growth": 1.25
+  },
+  "results": {
+    "300": {
+      "size": 300,
+      "iterations_per_second": 23379.997844727473,
+      "elapsed_seconds": 0.4277160360070411,
+      "nusselt": 1.0066956281661987,
+      "mean_squared_velocity": 3.3330773037409944e-12,
+      "time_steps": 10002
+    },
+    "375": {
+      "size": 375,
+      "iterations_per_second": 17476.719183716825,
+      "elapsed_seconds": 0.5721897740004351,
+      "nusselt": 1.0082088708877563,
+      "mean_squared_velocity": 5.595965531235425e-12,
+      "time_steps": 10002
+    },
+    "469": {
+      "size": 469,
+      "iterations_per_second": 11960.733824715531,
+      "elapsed_seconds": 0.8360691029956797,
+      "nusselt": 1.0086053609848022,
+      "mean_squared_velocity": 3.876778672390335e-12,
+      "time_steps": 10002
+    },
+    "587": {
+      "size": 587,
+      "iterations_per_second": 7919.604471001517,
+      "elapsed_seconds": 1.2626893220003694,
+      "nusselt": 1.0088179111480713,
+      "mean_squared_velocity": 3.1953623774727546e-12,
+      "time_steps": 10002
+    },
+    "734": {
+      "size": 734,
+      "iterations_per_second": 5420.212200463044,
+      "elapsed_seconds": 1.8449462179996772,
+      "nusselt": 1.0091524124145508,
+      "mean_squared_velocity": 2.3805109359426035e-12,
+      "time_steps": 10002
+    },
+    "918": {
+      "size": 918,
+      "iterations_per_second": 3504.1941526256287,
+      "elapsed_seconds": 2.853723157008062,
+      "nusselt": 1.009477972984314,
+      "mean_squared_velocity": 1.8306998712108724e-12,
+      "time_steps": 10002
+    },
+    "1148": {
+      "size": 1148,
+      "iterations_per_second": 2311.7343201988124,
+      "elapsed_seconds": 4.325756603007903,
+      "nusselt": 1.0094937086105347,
+      "mean_squared_velocity": 1.4647632065600824e-12,
+      "time_steps": 10002
+    },
+    "1435": {
+      "size": 1435,
+      "iterations_per_second": 1576.3306606860388,
+      "elapsed_seconds": 6.343846661999123,
+      "nusselt": 1.0096291303634644,
+      "mean_squared_velocity": 1.0930145677434666e-12,
+      "time_steps": 10002
+    },
+    "1794": {
+      "size": 1794,
+      "iterations_per_second": 930.2451526207368,
+      "elapsed_seconds": 10.749854456997127,
+      "nusselt": 1.0103081464767456,
+      "mean_squared_velocity": 9.304669664964016e-13,
+      "time_steps": 10002
+    },
+    "2243": {
+      "size": 2243,
+      "iterations_per_second": 609.2219822105357,
+      "elapsed_seconds": 16.414378161003697,
+      "nusselt": 1.0094574689865112,
+      "mean_squared_velocity": 7.305117340032641e-13,
+      "time_steps": 10002
+    }
+  }
+}
