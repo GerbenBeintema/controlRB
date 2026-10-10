@@ -24,9 +24,6 @@ try:
         plt.switch_backend('agg') #this does not work on my laptop thus I made this weird construct
                                   #better solution would be preferred.
     plt.close()
-    import matplotlib.cbook
-    warnings.filterwarnings("ignore",category=matplotlib.cbook.mplDeprecation)
-    import matplotlib.animation as animation #cannot be used on volta
 except ImportError:
     print('failed to load matplotlib')
 try:
