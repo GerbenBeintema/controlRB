@@ -322,18 +322,19 @@ __global__ void displace_collide(const data_t * __restrict__ d_f0,
 		T = ft0 + ft1 + ft2 + ft3;
 		rho = f0 + f1 + f2 + f3 + f4 + f5 + f6 + f7 + f8;
 
-		invrho = 1.0/rho;
+		// Match these constants to data_t to avoid double intermediates in float builds.
+		invrho = data_t(1.0) / rho;
 
 #ifdef ACCELERATION
-		ff_buoy = rho * d_alpha_G * (T - d_t0) * (1. + epssin[s]);
+		ff_buoy = rho * d_alpha_G * (T - d_t0) * (data_t(1.0) + epssin[s]);
 #else
 		ff_buoy = rho * d_alpha_G * (T - d_t0);
 #endif
 		ff_bodyrho = d_ffbody * rho;
 
-		u = ((f1 + f5 + f8 - f3 - f6 - f7) + 0.5 * ff_bodyrho) * invrho;
+		u = ((f1 + f5 + f8 - f3 - f6 - f7) + data_t(0.5) * ff_bodyrho) * invrho;
 
-		v = ((f2 + f5 + f6 - f4 - f7 - f8) + 0.5 * ff_buoy) * invrho;
+		v = ((f2 + f5 + f6 - f4 - f7 - f8) + data_t(0.5) * ff_buoy) * invrho;
 
 		data_t u2, v2, sumsq, sumsq2, u2d2cs4, v2d2cs4, ui, vi, uv;
 
@@ -341,7 +342,7 @@ __global__ void displace_collide(const data_t * __restrict__ d_f0,
 		v2 = v * v;
 
 		sumsq  = (u2 + v2) / d_cs22;
-		sumsq2 = sumsq * (1.0 - d_cs2) * d_cs2i;
+		sumsq2 = sumsq * (data_t(1.0) - d_cs2) * d_cs2i;
 		u2d2cs4 = u2 / d_cssq; // cssq = 2/9 = 2*cs2**2
 		v2d2cs4 = v2 / d_cssq;
 
@@ -351,15 +352,15 @@ __global__ void displace_collide(const data_t * __restrict__ d_f0,
 
 		data_t feq0, feq1, feq2, feq3, feq4, feq5, feq6, feq7, feq8;
 
-		feq0 = rho * d_rt0 * (1.0 - sumsq);
-		feq1 = rho * d_rt1 * (1.0 - sumsq + u2d2cs4 + ui);
-		feq2 = rho * d_rt1 * (1.0 - sumsq + v2d2cs4 + vi);
-		feq3 = rho * d_rt1 * (1.0 - sumsq + u2d2cs4 - ui);
-		feq4 = rho * d_rt1 * (1.0 - sumsq + v2d2cs4 - vi);
-		feq5 = rho * d_rt2 * (1.0 + sumsq2 + ui + vi + uv);
-		feq6 = rho * d_rt2 * (1.0 + sumsq2 - ui + vi - uv);
-		feq7 = rho * d_rt2 * (1.0 + sumsq2 - ui - vi + uv);
-		feq8 = rho * d_rt2 * (1.0 + sumsq2 + ui - vi - uv);
+		feq0 = rho * d_rt0 * (data_t(1.0) - sumsq);
+		feq1 = rho * d_rt1 * (data_t(1.0) - sumsq + u2d2cs4 + ui);
+		feq2 = rho * d_rt1 * (data_t(1.0) - sumsq + v2d2cs4 + vi);
+		feq3 = rho * d_rt1 * (data_t(1.0) - sumsq + u2d2cs4 - ui);
+		feq4 = rho * d_rt1 * (data_t(1.0) - sumsq + v2d2cs4 - vi);
+		feq5 = rho * d_rt2 * (data_t(1.0) + sumsq2 + ui + vi + uv);
+		feq6 = rho * d_rt2 * (data_t(1.0) + sumsq2 - ui + vi - uv);
+		feq7 = rho * d_rt2 * (data_t(1.0) + sumsq2 - ui - vi + uv);
+		feq8 = rho * d_rt2 * (data_t(1.0) + sumsq2 + ui - vi - uv);
 
 		// source term
 		data_t tauRdrho = d_cs2i * d_tau_R * invrho;
@@ -376,10 +377,11 @@ __global__ void displace_collide(const data_t * __restrict__ d_f0,
 		d_f8m[idx] = f8 - d_invtau * (f8 - feq8) + (feq8 * tauRdrho * (Rterm + ff_bodyrho - ff_buoy));
 
 
-		d_ft0m[idx] = ft0 - d_invtau_t*(ft0 - 0.25*T*(1.+2.*u));
-		d_ft1m[idx] = ft1 - d_invtau_t*(ft1 - 0.25*T*(1.+2.*v));
-		d_ft2m[idx] = ft2 - d_invtau_t*(ft2 - 0.25*T*(1.-2.*u));
-		d_ft3m[idx] = ft3 - d_invtau_t*(ft3 - 0.25*T*(1.-2.*v));
+		// Keep float builds in single precision for this hot thermal-equilibrium calculation.
+		d_ft0m[idx] = ft0 - d_invtau_t*(ft0 - data_t(0.25)*T*(data_t(1.0)+data_t(2.0)*u));
+		d_ft1m[idx] = ft1 - d_invtau_t*(ft1 - data_t(0.25)*T*(data_t(1.0)+data_t(2.0)*v));
+		d_ft2m[idx] = ft2 - d_invtau_t*(ft2 - data_t(0.25)*T*(data_t(1.0)-data_t(2.0)*u));
+		d_ft3m[idx] = ft3 - d_invtau_t*(ft3 - data_t(0.25)*T*(data_t(1.0)-data_t(2.0)*v));
 
 		if(ioflag == 1)
 		{
@@ -443,7 +445,7 @@ __global__ void calculate_macro(const data_t * __restrict__ d_f0,
 		rho = f0 + f1 + f2 + f3 + f4 + f5 + f6 + f7 + f8;
 		//ff_buoy = rho * d_alpha_G * (T - d_t0);
 		//ff_bodyrho = d_ffbody * rho;
-		invrho = 1.0/rho;
+		invrho = data_t(1.0)/rho;
 		//u = ((f1 + f5 + f8 - f3 - f6 - f7) + 0.5 * ff_bodyrho) * invrho; // different?
 		//v = ((f2 + f5 + f6 - f4 - f7 - f8) + 0.5 * ff_buoy) * invrho;
 		u = (f1 + f5 + f8 - f3 - f6 - f7) * invrho; // different but more simple
@@ -487,10 +489,10 @@ __global__ void bc_top_bottom_walls(data_t *d_f2, data_t *d_f4,
 
 
 		// temperature bottom
-		d_ft1[bot_idx - 1] = bottemp[index + 1] * 0.25;
+		d_ft1[bot_idx - 1] = bottemp[index + 1] * data_t(0.25);
 
 		// temperature top
-		d_ft3[top_idx + 1] = toptemp[index + 1] * 0.25;
+		d_ft3[top_idx + 1] = toptemp[index + 1] * data_t(0.25);
 
 	}
 }
@@ -593,8 +595,8 @@ __global__ void bc_all_walls(data_t *d_f1, data_t *d_f2, data_t *d_f3, data_t *d
 		if(x % NXP2 != NX)
 			d_f7[top_idx + NYP2 + 1] = d_f5[top_idx];
 
-		d_ft1[bot_idx - 1] = bottemp[index + 1] * 0.25;
-		d_ft3[top_idx + 1] = toptemp[index + 1] * 0.25;
+		d_ft1[bot_idx - 1] = bottemp[index + 1] * data_t(0.25);
+		d_ft3[top_idx + 1] = toptemp[index + 1] * data_t(0.25);
 	}
 
 	if(index < (NY * NSIM))
@@ -632,7 +634,7 @@ __global__ void cal_epssin(const data_t * __restrict__ dev_eps,
 {
 	int index = blockIdx.x * blockDim.x + threadIdx.x;
 	if (index < NSIM){
-		dev_epssin[index] = dev_eps[index]*sin(dev_omega[index]*(((data_t) dev_time[index])+0.5)); // or sin
+		dev_epssin[index] = dev_eps[index]*sin(dev_omega[index]*(((data_t) dev_time[index])+data_t(0.5))); // or sin
 	}
 }
 
