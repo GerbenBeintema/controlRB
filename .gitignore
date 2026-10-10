@@ -1,1 +1,6 @@
 thesis/
+*.egg-info/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd

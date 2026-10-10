@@ -722,6 +722,12 @@ void gpu_set_threads_blocks(gpuVars *gpu, int which_gpu)
 		exit(0);
 	}
 
+	// Defaults cover architectures that do not have a dedicated branch below.
+	gpu[0].threads_dispColl     = 256;
+	gpu[0].threads_bcTB         = 128;
+	gpu[0].threads_bcEW         = 128;
+	gpu[0].threads_persim       = 128;
+
 	if(prop.major == 7 && prop.minor == 0)  // TITAN V or Tesla V100
 	{
 		#ifndef SILENT

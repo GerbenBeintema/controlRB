@@ -30,10 +30,9 @@
 #
 #####################################################
 
-# Gencode arguments (sm architecture : maxwell)
-######################################################################
-GENCODE_FLAGS ?= -gencode arch=compute_70,code=sm_70 #################
-######################################################################
+# Build for Ada (8.9), with PTX available for newer GPU architectures.
+GENCODE_FLAGS ?= -gencode arch=compute_89,code=sm_89 \
+                 -gencode arch=compute_89,code=compute_89
 
 CUDA_PATH ?= "/usr/local/cuda/"
 

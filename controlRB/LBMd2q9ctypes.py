@@ -31,7 +31,7 @@ from __future__ import absolute_import,division,print_function
 import os #dirs
 from os import path
 import ctypes #load library lbm.so
-from subprocess import call #used to make lib
+from subprocess import run #used to make lib
 import numpy as np
 import time #timing of functions
 try:
@@ -42,9 +42,9 @@ try:
         plt.switch_backend('agg') #this does not work on my laptop thus I made this weird construct
                                   #better solution would be preferred.
     plt.close()
-    import matplotlib.cbook
+    import matplotlib
     import warnings
-    warnings.filterwarnings("ignore",category=matplotlib.cbook.mplDeprecation)
+    warnings.filterwarnings("ignore",category=matplotlib.MatplotlibDeprecationWarning)
     import matplotlib.animation as animation #cannot be used on volta, needs some sudo modules
 except ImportError:
     print('failed to load matplotlib')
@@ -78,39 +78,40 @@ def makelib(self):
 
     """
     stardir = path.abspath('.')
-    os.chdir(path.join(toppath,self.libdir))
-    arg = ['make','clean','name='+str(self.name)]
-    if self.verbose:
-        call(arg)
-    else:
-        call(arg+['--silent'])
-    if self.verbose: print('making lbm.so...')
-    arg = ['make','lib',
-          'NX='+str(self.NX),
-          'NY='+str(self.NY),
-          'NSIM='+str(self.NSIM),
-          'TBOT0='+str(self.TBOT0),
-          'TTOP0='+str(self.TTOP0),
-          'T0='+str(self.T0),
-          'wallprop='+str(self.wallprop),
-          'alphag='+str(self.alphag),
-          'ff_body='+str(self.ff_body),
-          'tau='+str(self.tau),
-          'taut='+str(self.taut),
-          'device='+str(self.device),
-          'seed='+str(self.seed),
-          'usedtype='+str(self.usedtype),
-          'name='+str(self.name)]
-    if self.accelerationcontrol:
-        arg += ['acceleration=ACCELERATION']
-    else:
-        arg += ['acceleration=NOTACCELERATION'] #plz
-    if not self.verbose:
-        arg += ['silent=SILENT']+['--silent']
-    else:
-        arg += ['silent=NOTSILENT']
-    call(arg)
-    os.chdir(stardir) #
+    try:
+        os.chdir(path.join(toppath,self.libdir))
+        arg = ['make','clean','name='+str(self.name)]
+        if not self.verbose:
+            arg += ['--silent']
+        run(arg,check=True)
+        if self.verbose: print('making lbm.so...')
+        arg = ['make','lib',
+              'NX='+str(self.NX),
+              'NY='+str(self.NY),
+              'NSIM='+str(self.NSIM),
+              'TBOT0='+str(self.TBOT0),
+              'TTOP0='+str(self.TTOP0),
+              'T0='+str(self.T0),
+              'wallprop='+str(self.wallprop),
+              'alphag='+str(self.alphag),
+              'ff_body='+str(self.ff_body),
+              'tau='+str(self.tau),
+              'taut='+str(self.taut),
+              'device='+str(self.device),
+              'seed='+str(self.seed),
+              'usedtype='+str(self.usedtype),
+              'name='+str(self.name)]
+        if self.accelerationcontrol:
+            arg += ['acceleration=ACCELERATION']
+        else:
+            arg += ['acceleration=NOTACCELERATION'] #plz
+        if not self.verbose:
+            arg += ['silent=SILENT','--silent']
+        else:
+            arg += ['silent=NOTSILENT']
+        run(arg,check=True)
+    finally:
+        os.chdir(stardir)
 
 deload_warned = False
 def loadlib(self): #add options
