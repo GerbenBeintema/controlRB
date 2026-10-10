@@ -280,7 +280,6 @@ __global__ void displace_collide(const data_t * __restrict__ d_f0,
 								data_t *d_ft2m,
 								data_t *d_ft3m,
 								data_t *u_arr,data_t *v_arr,data_t *rho_arr,data_t *T_arr,
-								const int * __restrict__ thread_arr,
 #ifdef ACCELERATION
 								const data_t * __restrict__ epssin,
 #endif
@@ -290,15 +289,10 @@ __global__ void displace_collide(const data_t * __restrict__ d_f0,
 
 	if(tid < d_gridLim_bulk)
 	{
-		// int s = tid / d_nxny;             // tid/(NY*NX); simulation number
-		// int i = tid/NY - s*NX;            // collom (x) number
-		// int j = tid - (i*NY) - s*d_nxny;  // row (y) number
-		// int idx = (j+1) + (i+1)*NYP2 + s*d_nxp2nyp2; // maybe dangerous, revisit if buggy
-
-		int idx = __ldg(&(thread_arr[tid]));
-#ifdef ACCELERATION
 		int s = tid / (NX*NY);
-#endif
+		int i = tid/NY - s*NX;
+		int j = tid - (i*NY) - s*(NX*NY);
+		int idx = (j+1) + (i+1)*NYP2 + s*(NXP2*NYP2);
 		data_t f0, f1, f2, f3, f4, f5, f6, f7, f8;
 		data_t ft0, ft1, ft2, ft3;
 
@@ -701,7 +695,6 @@ void gpuCall_displace_collide(gpuVars *gpu, int ioflag)
 							gpu[0].cv->d_ft2m, gpu[0].cv->d_ft3m,
 							gpu[0].cv->dev_u, gpu[0].cv->dev_v,
 							gpu[0].cv->dev_rho, gpu[0].cv->dev_temperature,
-							gpu[0].cv->dev_threadLookupArr,
 #ifdef ACCELERATION
 							gpu[0].cv->dev_epssin,
 #endif
