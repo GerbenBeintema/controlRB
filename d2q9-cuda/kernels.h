@@ -173,7 +173,6 @@ typedef struct
 	cudaVars *cv;
 
 	hostVars *hv;
-	cudaStream_t sim_stream;
 
 	// thread for kernels
 	unsigned int threads_dispColl;

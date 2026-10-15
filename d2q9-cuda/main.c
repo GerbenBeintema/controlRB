@@ -338,44 +338,12 @@ void pointerSwap(gpuVars *gpu)
 	
 }
 
-void cpu_inc_time(gpuVars * gpu, int nsteps) {
+void cpu_inc_time(gpuVars * gpu) {
 	for (int s=0;s<NSIM;++s) {
-		gpu[0].hv->host_time[s] += nsteps;
+		gpu[0].hv->host_time[s]++;
 	}
 }
 
-static void gpu_step(gpuVars *gpu, int ioflag)
-{
-	#ifdef PERIODIC
-		gpuCall_bc_top_bottom_walls(gpu);
-		gpuCall_bc_east_west_walls_periodic(gpu);
-	#else
-		gpuCall_bc_all_walls(gpu);
-	#endif
-	#ifdef ACCELERATION
-		gpuCall_cal_epssin(gpu);
-	#endif
-	gpuCall_displace_collide(gpu, ioflag);
-	pointerSwap(gpu);
-	#ifdef ACCELERATION
-		gpuCall_inc_time(gpu);
-	#endif
-}
-
-cudaGraphExec_t capture_step_pair(gpuVars *gpu, int final_ioflag)
-{
-	cudaGraph_t graph;
-	checkCudaErrors(cudaStreamBeginCapture(gpu[0].sim_stream, cudaStreamCaptureModeThreadLocal));
-	for (int step = 0; step < 2; ++step) {
-		gpu_step(gpu, step == 1 ? final_ioflag : 0);
-	}
-	checkCudaErrors(cudaStreamEndCapture(gpu[0].sim_stream, &graph));
-
-	cudaGraphExec_t graph_exec;
-	checkCudaErrors(cudaGraphInstantiate(&graph_exec, graph, NULL, NULL, 0));
-	checkCudaErrors(cudaGraphDestroy(graph));
-	return graph_exec;
-}
 
 
 void simsteps(simulation *sim, int n2steps)
@@ -393,31 +361,40 @@ void simsteps(simulation *sim, int n2steps)
 		checkCudaErrors(cudaMemcpy(gpu[0].cv->dev_eps, gpu[0].hv->host_eps, sizeof(data_t) * NSIM, cudaMemcpyHostToDevice));
 		checkCudaErrors(cudaMemcpy(gpu[0].cv->dev_omega, gpu[0].hv->host_omega, sizeof(data_t) * NSIM, cudaMemcpyHostToDevice));
 	#endif
-	const int total_steps = n2steps > 0 ? 2*n2steps : 1;
-	cudaGraphExec_t step_pair_graph = NULL;
-	cudaGraphExec_t final_pair_graph = NULL;
-	if (n2steps < 16) {
-		for (int i = 0; i < total_steps - 1; ++i) {
-			gpu_step(gpu, 0);
-		}
-		gpu_step(gpu, 1);
-	} else {
-		step_pair_graph = capture_step_pair(gpu, 0);
-		final_pair_graph = capture_step_pair(gpu, 1);
+	for (int i = 0; i < 2*n2steps-1; ++i)
+	{
+		#ifdef PERIODIC
+			gpuCall_bc_top_bottom_walls(gpu);
+			gpuCall_bc_east_west_walls_periodic(gpu);
+		#else
+			gpuCall_bc_all_walls(gpu);
+		#endif
+		#ifdef ACCELERATION
+			gpuCall_cal_epssin(gpu);
+		#endif
+		gpuCall_displace_collide(gpu, 0);
+		pointerSwap(gpu);
+		#ifdef ACCELERATION
+		gpuCall_inc_time(gpu);
+		#endif
+		cpu_inc_time(gpu); //maybe out of loop?
+	}
 
-		for (int i = 1; i < n2steps; ++i) {
-			checkCudaErrors(cudaGraphLaunch(step_pair_graph, gpu[0].sim_stream));
-		}
-		checkCudaErrors(cudaGraphLaunch(final_pair_graph, gpu[0].sim_stream));
-	}
-	cpu_inc_time(gpu, total_steps);
-	checkCudaErrors(cudaStreamSynchronize(gpu[0].sim_stream));
-	if (step_pair_graph != NULL) {
-		checkCudaErrors(cudaGraphExecDestroy(step_pair_graph));
-	}
-	if (final_pair_graph != NULL) {
-		checkCudaErrors(cudaGraphExecDestroy(final_pair_graph));
-	}
+	#ifdef PERIODIC
+		gpuCall_bc_top_bottom_walls(gpu);
+		gpuCall_bc_east_west_walls_periodic(gpu);
+	#else
+		gpuCall_bc_all_walls(gpu);
+	#endif
+	#ifdef ACCELERATION
+		gpuCall_cal_epssin(gpu);
+	#endif
+	gpuCall_displace_collide(gpu, 1); //update dev_rho, dev_u, dev_v, dev_temperature
+	pointerSwap(gpu);
+	#ifdef ACCELERATION
+	gpuCall_inc_time(gpu);
+	#endif
+	cpu_inc_time(gpu);
 
 
 

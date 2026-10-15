@@ -1,5 +1,5 @@
 {
-  "created_utc": "2026-10-10T19:32:17.656375+00:00",
+  "created_utc": "2026-10-10T18:59:54.832526+00:00",
   "gpu_name": "NVIDIA GeForce RTX 4070 Ti SUPER",
   "settings": {
     "mode": "cuda",
@@ -24,8 +24,8 @@
     "300": {
       "size": 300,
       "rayleigh": 10000000.0,
-      "iterations_per_second": 86967.56435070645,
-      "elapsed_seconds": 0.11498539800049912,
+      "iterations_per_second": 81598.47429173088,
+      "elapsed_seconds": 0.12255131099936989,
       "nusselt": 6.635195732116699,
       "mean_squared_velocity": 0.0008793760789558291,
       "time_steps": 10002
@@ -33,8 +33,8 @@
     "375": {
       "size": 375,
       "rayleigh": 19531250.0,
-      "iterations_per_second": 66830.94380906207,
-      "elapsed_seconds": 0.14963128500130551,
+      "iterations_per_second": 67011.94796207968,
+      "elapsed_seconds": 0.14922712000043248,
       "nusselt": 10.908927917480469,
       "mean_squared_velocity": 0.0010621214751154184,
       "time_steps": 10002
@@ -42,8 +42,8 @@
     "469": {
       "size": 469,
       "rayleigh": 38208040.370370366,
-      "iterations_per_second": 47934.46139683631,
-      "elapsed_seconds": 0.2086181779995968,
+      "iterations_per_second": 52921.00867892275,
+      "elapsed_seconds": 0.18896087299981446,
       "nusselt": 9.404866218566895,
       "mean_squared_velocity": 0.0007250508642755449,
       "time_steps": 10002
@@ -51,8 +51,8 @@
     "587": {
       "size": 587,
       "rayleigh": 74911852.96296297,
-      "iterations_per_second": 33998.230493951865,
-      "elapsed_seconds": 0.2941329550012597,
+      "iterations_per_second": 37797.86565512308,
+      "elapsed_seconds": 0.26456520299961994,
       "nusselt": 9.093396186828613,
       "mean_squared_velocity": 0.0006108041270636022,
       "time_steps": 10002
@@ -60,8 +60,8 @@
     "734": {
       "size": 734,
       "rayleigh": 146461816.29629633,
-      "iterations_per_second": 12046.77675230511,
-      "elapsed_seconds": 0.8300975610000023,
+      "iterations_per_second": 13849.803589013858,
+      "elapsed_seconds": 0.7220318999998199,
       "nusselt": 9.21296215057373,
       "mean_squared_velocity": 0.0005855355993844569,
       "time_steps": 10002
@@ -69,8 +69,8 @@
     "918": {
       "size": 918,
       "rayleigh": 286526160.0,
-      "iterations_per_second": 5689.135447626568,
-      "elapsed_seconds": 1.7577363189993775,
+      "iterations_per_second": 6160.3222295514715,
+      "elapsed_seconds": 1.6232917090001138,
       "nusselt": 12.91695499420166,
       "mean_squared_velocity": 0.0004902254440821707,
       "time_steps": 10002
@@ -78,8 +78,8 @@
     "1148": {
       "size": 1148,
       "rayleigh": 560353256.2962964,
-      "iterations_per_second": 3515.4777999412977,
-      "elapsed_seconds": 2.8445635469997796,
+      "iterations_per_second": 4105.272491037822,
+      "elapsed_seconds": 2.4358918979996815,
       "nusselt": 13.072120666503906,
       "mean_squared_velocity": 0.0003292385663371533,
       "time_steps": 10002
@@ -87,8 +87,8 @@
     "1435": {
       "size": 1435,
       "rayleigh": 1094439953.7037036,
-      "iterations_per_second": 2202.562305265106,
-      "elapsed_seconds": 4.540166684999349,
+      "iterations_per_second": 2713.794190796216,
+      "elapsed_seconds": 3.6848778120001953,
       "nusselt": 18.537750244140625,
       "mean_squared_velocity": 0.00027882459107786417,
       "time_steps": 10002
@@ -96,8 +96,8 @@
     "1794": {
       "size": 1794,
       "rayleigh": 2138471920.0000002,
-      "iterations_per_second": 1507.4335737925576,
-      "elapsed_seconds": 6.633791481001026,
+      "iterations_per_second": 1774.6905176349317,
+      "elapsed_seconds": 5.634785276999537,
       "nusselt": 24.980884552001953,
       "mean_squared_velocity": 0.0002319117629667744,
       "time_steps": 10002
@@ -105,8 +105,8 @@
     "2243": {
       "size": 2243,
       "rayleigh": 4179497372.962963,
-      "iterations_per_second": 922.2529882446552,
-      "elapsed_seconds": 10.843011763001414,
+      "iterations_per_second": 1115.6179877570137,
+      "elapsed_seconds": 8.963641774999815,
       "nusselt": 35.80428695678711,
       "mean_squared_velocity": 0.00019126341794617474,
       "time_steps": 10002
@@ -114,8 +114,8 @@
     "2804": {
       "size": 2804,
       "rayleigh": 8165264616.296293,
-      "iterations_per_second": 594.499015477504,
-      "elapsed_seconds": 16.82088572000066,
+      "iterations_per_second": 721.698170726228,
+      "elapsed_seconds": 13.856208045999665,
       "nusselt": 35.473567962646484,
       "mean_squared_velocity": 0.00015166732191573828,
       "time_steps": 10002
