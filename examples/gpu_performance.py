@@ -15,9 +15,10 @@ import numpy as np
 from controlRB import lbmd2q9
 
 
-START_SIZE = 300
+START_SIZE = 1500
 GRID_GROWTH = 1.25
-RAYLEIGH_AT_START_SIZE = 1e7
+RAYLEIGH_REFERENCE_SIZE = 300
+RAYLEIGH_AT_REFERENCE_SIZE = 1e7
 RAYLEIGH_SIZE_EXPONENT = 3
 PRANDTL = 0.71
 TAU = 0.5666
@@ -32,7 +33,10 @@ REFERENCE_PATH = Path(__file__).with_name("gpu_performance_reference.json")
 
 
 def rayleigh_for_size(size):
-    return RAYLEIGH_AT_START_SIZE * (size / START_SIZE) ** RAYLEIGH_SIZE_EXPONENT
+    return (
+        RAYLEIGH_AT_REFERENCE_SIZE
+        * (size / RAYLEIGH_REFERENCE_SIZE) ** RAYLEIGH_SIZE_EXPONENT
+    )
 
 
 def get_gpu_name(device):
@@ -174,8 +178,8 @@ def main():
     settings = {
         "mode": "cuda",
         "rayleigh_scaling": {
-            "value_at_start_size": RAYLEIGH_AT_START_SIZE,
-            "start_size": START_SIZE,
+            "value_at_reference_size": RAYLEIGH_AT_REFERENCE_SIZE,
+            "reference_size": RAYLEIGH_REFERENCE_SIZE,
             "size_exponent": RAYLEIGH_SIZE_EXPONENT,
         },
         "prandtl": PRANDTL,
